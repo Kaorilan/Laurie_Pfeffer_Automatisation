@@ -48,3 +48,8 @@ npm install (si vous préférez)
 ```bash
 npm install
 npx cypress open
+
+
+## Installation
+```bash
+npx cypress run

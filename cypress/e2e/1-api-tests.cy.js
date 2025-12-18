@@ -1,3 +1,5 @@
+/// <reference types="Cypress" />
+
 describe('Tests API - 6 requêtes principales (backend sur 8081)', () => {
   const API_BASE = 'http://localhost:8081';
 
