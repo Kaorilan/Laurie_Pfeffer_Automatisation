@@ -1,25 +1,29 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+const API_BASE = 'http://localhost:8081';
+
+Cypress.Commands.add('apiLogin', (email = 'test2@test.fr', password = 'testtest') => {
+  cy.request({
+    method: 'POST',
+    url: `${API_BASE}/login`,
+    body: { email, password },
+    failOnStatusCode: false,
+  }).then((resp) => {
+    if (resp.status === 200 && resp.body.token) {
+      Cypress.env('authToken', resp.body.token); // Assume JWT ou session token
+    }
+    return resp;
+  });
+});
+
+Cypress.Commands.add('apiRequest', ({ method, url, body, auth = true, failOnStatusCode = false }) => {
+  const headers = auth && Cypress.env('authToken')
+    ? { Authorization: `Bearer ${Cypress.env('authToken')}` }
+    : {};
+
+  cy.request({
+    method,
+    url: `${API_BASE}${url}`,
+    body,
+    headers,
+    failOnStatusCode,
+  });
+});

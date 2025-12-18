@@ -38,3 +38,13 @@ ou
 npm install (si vous préférez)
 ```
 
+# Tests Automatisés Eco Bliss Bath
+
+## Prérequis
+- Frontend : `npm start` → http://localhost:4200
+- Backend : lancé sur http://localhost:8081
+
+## Installation
+```bash
+npm install
+npx cypress open
