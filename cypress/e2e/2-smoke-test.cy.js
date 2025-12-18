@@ -4,19 +4,21 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
   });
 
   it('Vérifie présence des champs et boutons de connexion', () => {
-    // Le lien Connexion est un <a> avec data-cy="nav-link-login"
-    cy.get('[data-cy="nav-link-login"]')
-      .should('be.visible')
-      .and('contain.text', 'Connexion')
-      .click();
+  // Le lien Connexion est un <a> avec data-cy="nav-link-login"
+  cy.get('[data-cy="nav-link-login"]')
+    .should('be.visible')
+    .and('contain.text', 'Connexion')
+    .click();
 
-    // Vérification que le formulaire de login s'affiche
-    cy.get('input[type="email"]', { timeout: 10000 }).should('be.visible');
-    cy.get('input[type="password"]', { timeout: 10000 }).should('be.visible');
-    cy.get('button[type="submit"]', { timeout: 10000 })
-      .should('be.visible')
-      .and('contain.text', /connexion|se connecter|login/i');
-  });
+  // Vérification que le formulaire de login s'affiche
+  cy.get('input[type="email"]', { timeout: 10000 }).should('be.visible');
+  cy.get('input[type="password"]', { timeout: 10000 }).should('be.visible');
+
+  // Bouton submit : on vérifie qu'il est visible ET qu'il contient un texte attendu
+  cy.get('button[type="submit"]', { timeout: 10000 })
+    .should('be.visible')
+    .and('contain.text', /connexion|se connecter|login/i);
+});
 
   it('Vérifie présence boutons ajout panier quand connecté', () => {
     // Connexion via API (plus rapide et fiable que le front)
