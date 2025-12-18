@@ -27,3 +27,13 @@ Cypress.Commands.add('apiRequest', ({ method, url, body, auth = true, failOnStat
     failOnStatusCode,
   });
 });
+
+Cypress.Commands.add('loginUI', () => {
+  cy.visit('/');
+  cy.get('[data-cy="nav-link-login"]').contains('Connexion').click();
+
+  cy.get('input[type="email"], input#email').type(Cypress.env('TEST_EMAIL'));
+  cy.get('input[type="password"], input#password').type(Cypress.env('TEST_PASSWORD'));
+
+  cy.get('button[type="submit"], button:contains("Connexion")').click();
+});

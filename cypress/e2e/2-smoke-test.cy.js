@@ -4,7 +4,7 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
   });
 
   it('Vérifie présence des champs et boutons de connexion', () => {
-    cy.contains('button', /connexion|login|se connecter/i).click();
+    cy.contains('[data-cy="nav-link-login"]').click();
     cy.get('input[type="email"]').should('be.visible');
     cy.get('input[type="password"]').should('be.visible');
     cy.get('button[type="submit"]').should('be.visible');
