@@ -50,6 +50,6 @@ npm install
 npx cypress open
 
 
-## Installation
+## Lancement tests
 ```bash
 npx cypress run

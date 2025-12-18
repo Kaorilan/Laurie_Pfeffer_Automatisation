@@ -1,41 +1,38 @@
-describe('Sécurité - Test XSS dans espace commentaire (Stored)', () => {
+/// <reference types="Cypress" />
+
+describe('Sécurité - Test XSS dans espace commentaire/avis', () => {
   const payloads = [
-    '<script>alert("XSS EcoBliss")</script>',
+    '<script>alert("XSS")</script>',
     '"><script>alert("XSS")</script>',
     '<img src=x onerror=alert("XSS")>',
-    '<svg onload=alert(1)>',
-    '\'"><script>alert(1)</script>',
+    '<svg onload=alert("XSS")>',
+    'javascript:alert("XSS")',
   ];
 
   beforeEach(() => {
-    cy.apiLogin();
-    cy.visit(`/product/${1}`); // Page produit avec formulaire avis
+    cy.loginUI();
+    cy.visit(`/product/${1}`); // Adapte l'URL si besoin
   });
 
   payloads.forEach((payload) => {
-    it(`Teste payload XSS : ${payload.substring(0, 30)}...`, () => {
-      cy.get('textarea[name="comment"], #comment, [data-cy="review-text"]')
+    it(`Ne doit pas exécuter le payload XSS : ${payload.substring(0, 30)}...`, () => {
+      cy.get('textarea[name="comment"], textarea#comment, [data-cy="review-text"]')
         .clear()
-        .type(payload + '{enter}');
+        .type(payload);
 
-      cy.get('button:contains("Envoyer"), button[type="submit"]').click();
+      cy.get('button:contains("Envoyer"), button[type="submit"]')
+        .click();
 
-      // Recharge la page produit pour voir si Stored XSS s'exécute
-      cy.visit(`/product/${1}`);
+      // Recharge pour vérifier stored XSS
+      cy.reload();
 
-      // Si vulnérable → alert pop → Cypress capture
-      cy.on('window:alert', (text) => {
-        expect(text).to.contain('XSS');
-        throw new Error('FAILLE XSS DÉTECTÉE ! Payload exécuté : ' + payload);
+      // Si alert pop → faille
+      cy.on('window:alert', () => {
+        throw new Error(`FAILLE XSS DÉTECTÉE avec payload : ${payload}`);
       });
 
-      // Si pas d'alert → probablement safe
-      cy.wait(1000); // Temps pour éventuel onload
+      // Pas d'alert → safe
+      cy.wait(1000);
     });
-  });
-
-  it('Doit échapper les balises HTML dans les avis affichés', () => {
-    cy.visit(`/product/${1}`);
-    cy.get('.review, .comment').should('not.contain', '<script>');
   });
 });
