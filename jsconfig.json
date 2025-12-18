@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["cypress", "node"],
+    "baseUrl": "."
+  },
+  "include": [
+    "cypress/**/*.js",
+    "cypress.config.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
