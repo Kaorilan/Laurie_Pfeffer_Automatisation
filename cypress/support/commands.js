@@ -12,9 +12,11 @@ Cypress.Commands.add('apiLogin', (email = Cypress.env('TEST_EMAIL'), password = 
   }).then((response) => {
     // Si login réussi (200), on stocke le token pour les futures requêtes
     if (response.status === 200) {
+      console.log("response.body "+response.body)
       const token = response.body.token || response.body.accessToken || response.body.jwt;
       if (token) {
         Cypress.env('authToken', token);
+        console.log("token "+token)
         cy.log('Token JWT stocké pour les requêtes authentifiées');
       }
     }
@@ -32,7 +34,7 @@ Cypress.Commands.add('apiRequest', ({ method, url, body, auth = true, failOnStat
   if (auth && token) {
     headers.Authorization = `Bearer ${token}`;
   }
-
+  console.log("token "+token)
   cy.request({
     method,
     url: `${API_BASE}${url}`,

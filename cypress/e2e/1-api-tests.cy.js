@@ -23,13 +23,14 @@ describe('Tests API - 6 requêtes demandées (état actuel : auth mockée en fro
   });
 
   // 2. GET /orders avec auth : récupère la liste des produits du panier
-  it.skip('GET /orders avec connexion → récupère la liste des produits du panier', () => {
+  it('GET /orders avec connexion → récupère la liste des produits du panier', () => {
     // Skip car l'auth API est mockée en front : /login retourne 400 et n'est pas appelé
     // Le panier n'est pas accessible via API directe actuellement
-    cy.apiLogin();
+    cy.apiLogin().then((resp) => {
     cy.apiRequest({ method: 'GET', url: '/orders' })
       .its('status')
       .should('eq', 200);
+    })
   });
 
   // 3. GET /products/{id} : récupère une fiche produit spécifique
@@ -75,13 +76,13 @@ describe('Tests API - 6 requêtes demandées (état actuel : auth mockée en fro
     }).its('status').should('eq', 405); // Bug non corrigé
   });
 
-  it.skip('POST /orders/add → ajout produit en rupture de stock', () => {
+  it('POST /orders/add → ajout produit en rupture de stock', () => {
     // Skip car nécessite auth valide (impossible via API actuellement)
     // Et même sans auth, l'endpoint attend PUT
   });
 
   // 6. POST /reviews : ajout d'un avis
-  it.skip('POST /reviews → ajouter un avis', () => {
+  it('POST /reviews → ajouter un avis', () => {
     // Skip car nécessite auth valide via API (impossible actuellement)
     cy.apiLogin();
     cy.apiRequest({
