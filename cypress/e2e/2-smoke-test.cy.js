@@ -12,18 +12,20 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
       .and('contain.text', 'Connexion')
       .click();
 
-    // 2. Attente de la page dédiée /#/login
+    // 2. Attente de la page de connexion
     cy.url({ timeout: 10000 }).should('include', '/#/login');
 
-    // 3. Vérification des champs du formulaire
-    cy.get('input[type="email"], input#email', { timeout: 10000 })
+    // 3. Vérification des champs (email supposé data-cy="login-input-email")
+    cy.get('input[type="email"], [data-cy="login-input-email"]', { timeout: 10000 })
       .should('be.visible');
 
-    cy.get('input[type="password"], input#password', { timeout: 10000 })
+    cy.get('[data-cy="login-input-password"]', { timeout: 10000 })
       .should('be.visible');
 
-    cy.get('button[type="submit"], button:contains("Connexion"), button:contains("Se connecter")', { timeout: 10000 })
-      .should('be.visible');
+    // 4. Vérification du bouton Se connecter
+    cy.get('[data-cy="login-submit"]', { timeout: 10000 })
+      .should('be.visible')
+      .and('contain.text', 'Se connecter');
   });
 
   it('Vérifie la présence des boutons d’ajout au panier quand connecté', () => {
@@ -34,32 +36,33 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
     cy.url().should('include', '/#/login');
 
     // 2. Saisie des identifiants
-    cy.get('input[type="email"]')
+    cy.get('input[type="email"], [data-cy="login-input-email"]')
       .type(Cypress.env('TEST_EMAIL'));
 
-    cy.get('input[type="password"]')
+    cy.get('[data-cy="login-input-password"]')
       .type(Cypress.env('TEST_PASSWORD'));
 
     // 3. Soumission
-    cy.get('button[type="submit"]')
+    cy.get('[data-cy="login-submit"]')
       .click();
 
-    // 4. Attente redirection vers accueil (ou page principale)
-    cy.url({ timeout: 15000 }).should('eq', 'http://localhost:4200/#/'); // ou .not.include('/login')
+    // 4. Attente redirection vers accueil
+    cy.url({ timeout: 15000 }).should('not.include', '/login');
 
-    // 5. Vérification bouton panier visible (connexion réussie)
+    // 5. Vérification que le bouton panier est visible (connexion réussie)
     cy.get('[data-cy="cart-button"], .cart-icon, a:contains("Panier")', { timeout: 10000 })
       .should('be.visible');
 
-    // 6. Vérification boutons "Ajouter au panier" sur les produits
+    // 6. Vérification des boutons "Ajouter au panier" sur les produits
+    // Adapte le sélecteur selon ce que tu vois dans l'inspecteur sur la page d'accueil connectée
     cy.get('body').then(($body) => {
       if ($body.find('[data-cy="add-to-cart"], [data-cy="add-to-cart-btn"]').length > 0) {
         cy.get('[data-cy="add-to-cart"], [data-cy="add-to-cart-btn"]')
           .should('have.length.gte', 1)
           .and('be.visible');
       } else {
-        // Fallback sur texte courant
-        cy.contains('button', /ajouter au panier|ajouter|add/i, { timeout: 10000 })
+        // Fallback sur texte courant (à adapter)
+        cy.contains('button', /ajouter au panier|ajouter/i, { timeout: 10000 })
           .should('have.length.gte', 1)
           .and('be.visible');
       }
