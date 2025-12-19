@@ -58,12 +58,12 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
     // Retour à l'accueil
     cy.go('back');
 
-    // Clic sur un produit depuis l'accueil
-    cy.get('[data-cy="product-card"], .product-item, .card') // Adapte si besoin
+    // Clic sur le bouton "Consulter" du premier produit
+    cy.get('[data-cy="product-home-link"]', { timeout: 10000 })
       .first()
-      .within(() => {
-        cy.contains('a, button', /consulter|voir|détails/i).click();
-      });
+      .should('be.visible')
+      .and('contain.text', 'Consulter')
+      .click();
 
     // Attente page produit
     cy.url({ timeout: 10000 }).should('include', '/product/');
