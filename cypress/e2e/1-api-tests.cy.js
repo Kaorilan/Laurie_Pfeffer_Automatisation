@@ -23,14 +23,11 @@ describe('Tests API - 6 requêtes demandées (état actuel : auth mockée en fro
 
   // 2. GET /orders avec auth : récupère la liste des produits du panier
   it('GET /orders avec connexion → récupère la liste des produits du panier', () => {
-    cy.apiLogin();
-    cy.apiRequest({ method: 'GET', url: '/orders' })
-      .then((resp) => {
-        // Échec attendu : login retourne 400 → pas de token → 401
-        expect(resp.status).to.eq(401);
-        cy.log('ANOMALIE : panier inaccessible car authentification API échouée');
-      });
-  });
+  cy.loginUI(); // Connexion mock + extraction token
+  cy.apiRequest({ method: 'GET', url: '/orders', auth: true })
+    .its('status')
+    .should('eq', 200);
+});
 
   // 3. GET /products/{id} : récupère une fiche produit spécifique
   it('GET /products/{id} → récupère une fiche produit spécifique', () => {
@@ -87,16 +84,13 @@ describe('Tests API - 6 requêtes demandées (état actuel : auth mockée en fro
   });
 
   // 6. POST /reviews : ajout d'un avis
-  it('POST /reviews → ajouter un avis → retourne 200 ou 201', () => {
-    cy.apiLogin();
+  it('POST /reviews → ajouter un avis', () => {
+    cy.loginUI();
     cy.apiRequest({
       method: 'POST',
       url: '/reviews',
-      body: { productId, rating: 5, comment: 'Test automatisé Cypress' },
-    }).then((resp) => {
-      // Échec attendu : retourne 401 (pas de token)
-      expect(resp.status).to.eq(401);
-      cy.log('ANOMALIE : ajout avis impossible car authentification échouée');
-    });
+      body: { productId, rating: 5, comment: 'Test automatisé' },
+      auth: true,
+    }).its('status').should('be.oneOf', [200, 201]);
   });
 });
