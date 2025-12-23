@@ -3,7 +3,7 @@
 const API_BASE = Cypress.env('API_BASE') || 'http://localhost:8081';
 
 describe('Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage)', () => {
-  let productId = 1;
+  let productId;
 
 
   before(() => {
@@ -25,20 +25,13 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
   });
 
   it('GET /orders avec connexion → récupère la liste des produits du panier', () => {
-    cy.loginUI();
+    
     return cy.apiRequest({ method: 'GET', url: '/orders', auth: true })
       .its('status')
       .should('eq', 200);
   });
 
-  it('Vérification du token dans Cypress.env après login', () => {
-    cy.loginUI();
-    cy.then(() => {
-      const token = Cypress.env('authToken');
-      cy.log('Token actuel:', token);
-      expect(token).to.exist;
-    });
-  });
+
 
   it('GET /products/{id} → récupère une fiche produit spécifique', () => {
     cy.apiRequest({ method: 'GET', url: `/products/${productId}`, auth: false })
@@ -46,31 +39,40 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
       .should('eq', 200);
   });
 
-it('POST /login → utilisateur inconnu → retourne erreur', () => {
-  cy.request({
-    method: 'POST',
-    url: `${API_BASE}/login`,
-    body: { email: 'inconnu@test.fr', password: 'wrong' },
-    failOnStatusCode: false,
-  }).its('status').should('be.oneOf', [400, 401]);
-});
-
-it('POST /login → utilisateur connu → retourne 200', () => {
-  cy.request({
-    method: 'POST',
-    url: `${API_BASE}/login`,
-    body: { email: Cypress.env('TEST_EMAIL'), password: Cypress.env('TEST_PASSWORD') },
-    failOnStatusCode: false,
-  }).then((resp) => {
-    expect(resp.status, 'Status devrait être 200 pour un login réussi').to.eq(200);
+  it('POST /login → utilisateur inconnu → retourne erreur', () => {
+    cy.request({
+      method: 'POST',
+      url: `${API_BASE}/login`,
+      body: { username: 'inconnu@test.fr', password: 'wrong' },
+      failOnStatusCode: false,
+    }).its('status').should('be.oneOf', [400, 401]);
   });
-});
 
-  it('POST /orders/add → ajout produit disponible', () => {
+  it('POST /login → utilisateur connu → retourne 200', () => {
+    cy.request({
+      method: 'POST',
+      url: `${API_BASE}/login`,
+      body: { username: Cypress.env('TEST_EMAIL'), password: Cypress.env('TEST_PASSWORD') },
+      failOnStatusCode: false,
+    }).then((resp) => {
+      cy.log(JSON.stringify(resp.body)); // Voir le message d'erreur retourné
+      expect(resp.status, 'Status devrait être 200 pour un login réussi').to.eq(200);
+    });
+  });
+    it('Vérification du token dans Cypress.env après login', () => {
+      cy.loginUI();
+      cy.then(() => {
+        const token = Cypress.env('authToken');
+        cy.log('Token actuel:', token);
+        expect(token).to.exist;
+      });
+    });
+
+  it('PUT /orders/add → ajout produit disponible', () => {
   return cy.apiRequest({
-    method: 'POST',
+    method: 'PUT',
     url: '/orders/add',
-    body: { productId, quantity: 1 },
+    body: { product: productId, quantity: 1 },
     auth: true,
   }).its('status').should('eq', 200);
 });
@@ -88,7 +90,7 @@ it('POST /login → utilisateur connu → retourne 200', () => {
     return cy.apiRequest({
       method: 'POST',
       url: '/reviews',
-      body: { productId, rating: 5, comment: 'Test automatisé' },
+      body: { title: 'Test automatisé', rating: 5, comment: 'Test automatisé' },
       auth: true,
     }).its('status').should('be.oneOf', [200, 201]);
   });
