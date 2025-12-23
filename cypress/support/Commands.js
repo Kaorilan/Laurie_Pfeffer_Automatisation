@@ -10,7 +10,7 @@ Cypress.Commands.add('loginUI', () => {
   cy.url({ timeout: 15000 }).should('include', '/#/login');
 
   // Champ username (tu l’as confirmé dans l’inspecteur)
-  cy.get('input[type="username"]', { timeout: 15000 })
+  cy.get('[data-cy="login-input-username"]', { timeout: 15000 })
     .type(Cypress.env('TEST_EMAIL'));
 
   cy.get('[data-cy="login-input-password"]')
