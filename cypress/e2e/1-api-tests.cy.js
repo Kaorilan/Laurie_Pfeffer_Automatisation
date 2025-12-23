@@ -7,6 +7,7 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
 
 
   before(() => {
+    cy.loginUI();
     return cy.apiRequest({ method: 'GET', url: '/products', auth: false })
       .its('body')
       .then((products) => {
@@ -14,10 +15,6 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
           productId = products[0].id;
         }
       });
-  });
-
-  beforeEach(() => {
-    cy.loginUI(); 
   });
 
 

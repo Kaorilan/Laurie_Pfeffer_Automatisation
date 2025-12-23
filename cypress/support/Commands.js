@@ -2,12 +2,12 @@
 
 // Connexion via front (mock) + extraction du token localStorage
 Cypress.Commands.add('loginUI', () => {
-  
-  cy.visit(Cypress.env('FRONTEND_BASE'));
-  cy.get('app-root', { timeout: 10000 }).should('exist');
-  cy.get('nav', { timeout: 10000 }).should('be.visible');
-  cy.contains('a', 'Connexion', { timeout: 10000 }).should('be.visible').click();
+  cy.log(Cypress.env('FRONTEND_BASE'))
 
+  cy.visit(Cypress.env('FRONTEND_BASE'));
+  cy.get('body', { timeout: 10000 }).should('be.visible');
+  cy.get('[data-cy="nav-link-login"]', { timeout: 10000 }).should('be.visible').click();
+    
   cy.url({ timeout: 15000 }).should('include', '/#/login');
 
   cy.get('[data-cy="login-input-username"]', { timeout: 15000 })
