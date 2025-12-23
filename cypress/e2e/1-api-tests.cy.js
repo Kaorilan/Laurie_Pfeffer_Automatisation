@@ -3,9 +3,6 @@
 describe('Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage)', () => {
   let productId = 1;
 
-  beforeEach(() => {
-    cy.loginUI(); // Connexion mock + token extrait
-  });
 
   before(() => {
     cy.apiRequest({ method: 'GET', url: '/products', auth: false })
@@ -17,6 +14,11 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
       });
   });
 
+  beforeEach(() => {
+    cy.loginUI(); 
+  });
+
+
   it('GET /orders sans connexion → retourne erreur pour données confidentielles', () => {
     cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
       .its('status')
@@ -27,6 +29,15 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
     cy.apiRequest({ method: 'GET', url: '/orders', auth: true })
       .its('status')
       .should('eq', 200);
+  });
+
+  it('Vérification du token dans Cypress.env après login', () => {
+    cy.loginUI();
+    cy.then(() => {
+      const token = Cypress.env('authToken');
+      cy.log('Token actuel:', token);
+      expect(token).to.exist;
+    });
   });
 
   it('GET /products/{id} → récupère une fiche produit spécifique', () => {

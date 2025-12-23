@@ -44,11 +44,13 @@ Cypress.Commands.add('apiRequest', ({ method, url, body, auth = true, failOnStat
   if (auth && token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  cy.request({
+  return cy.request({
     method,
-    url: `${API_BASE}${url}`, // ← Virgule supprimée ici
+    url: `${API_BASE}${url}`,
     body,
     headers,
     failOnStatusCode,
+  }).then(response => {
+    return cy.wrap(response);
   });
 });
