@@ -1,15 +1,14 @@
-const API_BASE = 'http://localhost:8081';
+
 
 // Connexion via front (mock) + extraction du token localStorage
 Cypress.Commands.add('loginUI', () => {
-  cy.visit('/');
+  cy.visit(Cypress.env('FRONTEND_BASE') || '/');
   cy.get('[data-cy="nav-link-login"]')
     .should('be.visible')
     .click();
 
   cy.url({ timeout: 15000 }).should('include', '/#/login');
 
-  // Champ username (tu l’as confirmé dans l’inspecteur)
   cy.get('[data-cy="login-input-username"]', { timeout: 15000 })
     .type(Cypress.env('TEST_EMAIL'));
 
@@ -39,6 +38,7 @@ Cypress.Commands.add('loginUI', () => {
 
 // Requête API avec token extrait
 Cypress.Commands.add('apiRequest', ({ method, url, body, auth = true, failOnStatusCode = false }) => {
+  const API_BASE = Cypress.env('API_BASE') || 'http://localhost:8081';
   const headers = {};
   const token = Cypress.env('authToken');
   if (auth && token) {
