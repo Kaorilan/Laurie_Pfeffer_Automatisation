@@ -1,11 +1,13 @@
 /// <reference types="Cypress" />
 
+const API_BASE = Cypress.env('API_BASE') || 'http://localhost:8081';
+
 describe('Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage)', () => {
   let productId = 1;
 
 
   before(() => {
-    cy.apiRequest({ method: 'GET', url: '/products', auth: false })
+    return cy.apiRequest({ method: 'GET', url: '/products', auth: false })
       .its('body')
       .then((products) => {
         if (Array.isArray(products) && products.length > 0) {
@@ -20,13 +22,14 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
 
 
   it('GET /orders sans connexion → retourne erreur pour données confidentielles', () => {
-    cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
+    return cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
       .its('status')
       .should('eq', 401);
   });
 
   it('GET /orders avec connexion → récupère la liste des produits du panier', () => {
-    cy.apiRequest({ method: 'GET', url: '/orders', auth: true })
+    cy.loginUI();
+    return cy.apiRequest({ method: 'GET', url: '/orders', auth: true })
       .its('status')
       .should('eq', 200);
   });
@@ -46,16 +49,16 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
       .should('eq', 200);
   });
 
-  it('POST /login → utilisateur inconnu → retourne erreur', () => {
-    cy.request({
-      method: 'POST',
-      url: `${API_BASE}/login`,
-      body: { email: 'inconnu@test.fr', password: 'wrong' },
-      failOnStatusCode: false,
-    }).its('status').should('be.oneOf', [400, 401]);
-  });
+it('POST /login → utilisateur inconnu → retourne erreur', () => {
+  cy.request({
+    method: 'POST',
+    url: `${API_BASE}/login`,
+    body: { email: 'inconnu@test.fr', password: 'wrong' },
+    failOnStatusCode: false,
+  }).its('status').should('be.oneOf', [400, 401]);
+});
 
-  it('POST /login → utilisateur connu → retourne 200', () => {
+it('POST /login → utilisateur connu → retourne 200', () => {
   cy.request({
     method: 'POST',
     url: `${API_BASE}/login`,
@@ -67,16 +70,16 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
 });
 
   it('POST /orders/add → ajout produit disponible', () => {
-    cy.apiRequest({
-      method: 'POST',
-      url: '/orders/add',
-      body: { productId, quantity: 1 },
-      auth: true,
-    }).its('status').should('eq', 200);
-  });
+  return cy.apiRequest({
+    method: 'POST',
+    url: '/orders/add',
+    body: { productId, quantity: 1 },
+    auth: true,
+  }).its('status').should('eq', 200);
+});
 
   it('POST /orders/add → ajout produit en rupture de stock', () => {
-    cy.apiRequest({
+    return cy.apiRequest({
       method: 'POST',
       url: '/orders/add',
       body: { productId: 999, quantity: 1 },
@@ -85,7 +88,7 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
   });
 
   it('POST /reviews → ajouter un avis', () => {
-    cy.apiRequest({
+    return cy.apiRequest({
       method: 'POST',
       url: '/reviews',
       body: { productId, rating: 5, comment: 'Test automatisé' },
