@@ -10,24 +10,23 @@ describe('Sécurité - Test XSS dans espace commentaire/avis', () => {
   ];
 
   beforeEach(() => {
-    cy.loginUI(); // Connexion mock (fonctionne)
+    cy.loginUI();
 
-    // Va sur une page produit (adapte l'ID si besoin)
-    cy.visit('/#/products/1'); // ou clique sur un produit depuis accueil
+    cy.visit('/#/reviews');
 
-    cy.url({ timeout: 15000 }).should('include', '/products/');
+    cy.url({ timeout: 15000 }).should('include', '/reviews/');
   });
 
   payloads.forEach((payload) => {
     it(`Ne doit pas exécuter le payload XSS : ${payload.substring(0, 30)}...`, () => {
-      // Champ commentaire (ton data-cy exact)
+      
       cy.get('[data-cy="review-input-comment"]', { timeout: 15000 })
         .should('be.visible')
         .clear()
         .type(payload + '{enter}');
 
       // Bouton envoyer (adapte si tu as un data-cy, sinon par texte)
-      cy.get('button[type="submit"], button:contains("Envoyer"), button:contains("Publier")', { timeout: 10000 })
+      cy.get('button[type="submit"], button:contains("Publier")', { timeout: 10000 })
         .click();
 
       // Recharge la page produit pour vérifier stored XSS
