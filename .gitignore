@@ -3,3 +3,9 @@ cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec c
 cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (état actuel  auth mockée en front) -- GET orders avec connexion → récupère la liste des produits du panier (failed).png
 cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (état actuel  auth mockée en front) -- POST reviews → ajouter un avis (failed).png
 cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (état actuel  auth mockée en front) -- GET orders avec connexion → récupère la liste des produits du panier (failed).png
+cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- GET orders sans connexion → retourne erreur pour données confidentielles -- before all hook (failed).png
+cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- GET orders avec connexion → récupère la liste des produits du panier (failed).png
+cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- POST login → utilisateur connu → retourne 200 (failed).png
+cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- POST reviews → ajouter un avis (failed).png
+cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- POST ordersadd → ajout produit disponible (failed).png
+cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- Vérification du token dans Cypress.env après login (failed).png
