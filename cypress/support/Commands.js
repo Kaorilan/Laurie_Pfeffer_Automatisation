@@ -2,7 +2,6 @@
 
 // Connexion via front (mock) + extraction du token localStorage
 Cypress.Commands.add('loginUI', () => {
-  cy.log(Cypress.env('FRONTEND_BASE'))
 
   cy.visit(Cypress.env('FRONTEND_BASE'));
   cy.get('body', { timeout: 10000 }).should('be.visible');
