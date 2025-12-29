@@ -12,41 +12,20 @@ describe('Tests Fonctionnels Critiques', () => {
   it('2. Panier (connecté avec les infos ci-dessus)', () => {
     cy.loginUI(); // Connexion mock
 
-    cy.visit('/');
+    // Visite directe du produit avec stock >20 (tu as confirmé /products/5)
+    cy.visit('/#/products/5');
 
-    // Boucle pour trouver un produit avec stock >=2
-    let found = false;
-    cy.get('[data-cy="product-home-link"]', { timeout: 15000 })
-      .each(($btn) => {
-        if (!found) {
-          cy.wrap($btn).click();
+    cy.url({ timeout: 15000 }).should('include', '/products/5');
 
-          cy.url({ timeout: 15000 }).should('include', '/products/');
-
-          cy.get('[data-cy="detail-product-stock"], .stock', { timeout: 10000 })
-            .invoke('text')
-            .then((text) => {
-              const stock = parseInt(text.match(/\d+/)?.[0] || '0');
-              if (stock >= 2) {
-                found = true;
-                cy.log(`Produit trouvé avec stock ${stock} – test continue`);
-                throw new Error('STOP_LOOP'); // Arrête la boucle
-              } else {
-                cy.go('back'); // Retour accueil pour tester le suivant
-              }
-            });
-        }
-      });
-
-    // Maintenant on est sur un produit avec stock >=2
-    cy.get('[data-cy="detail-product-stock"], .stock')
+    // Récupère le stock initial (doit être >20)
+    cy.get('[data-cy="detail-product-stock"], .stock', { timeout: 15000 })
       .invoke('text')
       .then((text) => {
         const initialStock = parseInt(text.match(/\d+/)?.[0] || '0');
-        expect(initialStock).to.be.gte(2);
+        expect(initialStock).to.be.gte(25, 'Produit /products/5 doit avoir stock >=25 pour le test limite');
 
         // Test limite négative
-        cy.get('input[type="number"], [data-cy="quantity"]')
+        cy.get('input[type="number"], [data-cy="quantity"]', { timeout: 15000 })
           .clear()
           .type('-5')
           .should('not.have.value', '-5');
