@@ -12,32 +12,39 @@ describe('Sécurité - Test XSS dans espace commentaire/avis', () => {
   beforeEach(() => {
     cy.loginUI();
 
-    cy.visit('/#/reviews');
+    
+    cy.get('a, button')
+      .contains(/avis|reviews/i)
+      .should('be.visible')
+      .click();
 
-    cy.url({ timeout: 15000 }).should('include', '/reviews/');
+    
+    cy.url({ timeout: 15000 }).should('include', '/reviews'); 
+
+    
+    cy.get('[data-cy="review-input-comment"]', { timeout: 15000 })
+      .should('be.visible');
   });
 
   payloads.forEach((payload) => {
     it(`Ne doit pas exécuter le payload XSS : ${payload.substring(0, 30)}...`, () => {
-      
-      cy.get('[data-cy="review-input-comment"]', { timeout: 15000 })
-        .should('be.visible')
+      cy.get('[data-cy="review-input-comment"]')
         .clear()
         .type(payload + '{enter}');
 
-      // Bouton envoyer (adapte si tu as un data-cy, sinon par texte)
-      cy.get('button[type="submit"], button:contains("Publier")', { timeout: 10000 })
+      
+      cy.get('button[type="submit"], button:contains("Publier"), button:contains("Envoyer")', { timeout: 10000 })
         .click();
 
-      // Recharge la page produit pour vérifier stored XSS
+     
       cy.reload();
 
-      // Si alert pop → faille XSS
+      
       cy.on('window:alert', (text) => {
         throw new Error(`FAILLE XSS DÉTECTÉE : ${text} avec payload ${payload}`);
       });
 
-      // Pas d'alert après attente → safe
+     
       cy.wait(2000);
     });
   });
