@@ -45,13 +45,14 @@ npm install (si vous préférez)
 - Backend : Docker → http://localhost:8081
 
 
-# Lancement tests en mode terminal
+## Lancement tests en mode terminal
 ```bash
 npx cypress run
 ```
 
-# Lancement tests avec Cypress Chrome
+## Lancement tests avec Cypress Chrome
 ```bash
 npx cypress open
 ```
+
 
