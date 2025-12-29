@@ -42,13 +42,16 @@ npm install (si vous préférez)
 
 ## Prérequis
 - Frontend : `npm start` → http://localhost:4200
-- Backend : lancé sur http://localhost:8081
+- Backend : Docker → http://localhost:8081
 
-## Installation
-```bash
-npm install
-npx cypress open
 
-## Lancement tests
+# Lancement tests en mode terminal
 ```bash
 npx cypress run
+```
+
+# Lancement tests avec Cypress Chrome
+```bash
+npx cypress open
+```
+
