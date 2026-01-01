@@ -12,13 +12,13 @@ describe('Tests Fonctionnels Critiques', () => {
   it('2. Panier (connecté avec les infos ci-dessus)', () => {
     cy.loginUI();
 
-    // Visite directe du produit avec stock (tu as confirmé /products/5 = 23)
     cy.visit('/#/products/5');
 
     cy.url({ timeout: 15000 }).should('include', '/products/5');
 
-    // Récupère le stock initial
+    // Récupère le stock initial (le chiffre est dans un span ou le parent)
     cy.get('[data-cy="detail-product-stock"]', { timeout: 15000 })
+      .parent() // Remonte au parent si le chiffre est dans un span
       .invoke('text')
       .then((text) => {
         const initialStock = parseInt(text.match(/\d+/)?.[0] || '0');
@@ -57,15 +57,16 @@ describe('Tests Fonctionnels Critiques', () => {
         cy.reload();
 
         cy.get('[data-cy="detail-product-stock"]')
+          .parent()
           .invoke('text')
           .then((newText) => {
             const newStock = parseInt(newText.match(/\d+/)?.[0] || '0');
             expect(newStock).to.eq(initialStock - 2);
           });
-      });
 
-    // Champ disponibilité (texte exact "en stock")
-    cy.contains('en stock', { timeout: 15000 })
-      .should('be.visible');
+        // Champ disponibilité
+        cy.contains('en stock', { timeout: 15000 })
+          .should('be.visible');
+      });
   });
 });
