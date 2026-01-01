@@ -2,7 +2,7 @@
 
 describe('Tests Fonctionnels Critiques', () => {
   it('1. Connexion Front', () => {
-    cy.loginUI();
+    cy.loginUI(); // Connexion mock
 
     cy.get('[data-cy="nav-link-cart"]', { timeout: 15000 })
       .should('be.visible')
@@ -10,19 +10,20 @@ describe('Tests Fonctionnels Critiques', () => {
   });
 
   it('2. Panier (connecté avec les infos ci-dessus)', () => {
-    cy.loginUI();
+    cy.loginUI(); // Connexion AVANT visite produit (important !)
 
+    // Visite directe du produit 5 (stock = 23)
     cy.visit('/#/products/5');
 
     cy.url({ timeout: 15000 }).should('include', '/products/5');
 
-    // Récupère le stock initial (le chiffre est dans un span ou le parent)
+    // Récupère le stock initial (doit être 23)
     cy.get('[data-cy="detail-product-stock"]', { timeout: 15000 })
-      .parent() // Remonte au parent si le chiffre est dans un span
       .invoke('text')
       .then((text) => {
+        console.log(`Texte stock trouvé : "${text}"`); // Debug
         const initialStock = parseInt(text.match(/\d+/)?.[0] || '0');
-        expect(initialStock).to.be.gte(2);
+        expect(initialStock).to.be.gte(2, 'Stock insuffisant sur produit 5');
 
         // Test limite négative
         cy.get('[data-cy="detail-product-quantity"]', { timeout: 15000 })
@@ -44,7 +45,7 @@ describe('Tests Fonctionnels Critiques', () => {
         cy.contains('button', /ajouter au panier|ajouter/i)
           .click();
 
-        // Vérif via API
+        // Vérif contenu panier via API
         cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
           .then((resp) => {
             if (resp.status === 200) {
@@ -53,18 +54,17 @@ describe('Tests Fonctionnels Critiques', () => {
             }
           });
 
-        // Recharge et vérif stock diminué
+        // Retour sur la page du produit et vérif stock diminué
         cy.reload();
 
         cy.get('[data-cy="detail-product-stock"]')
-          .parent()
           .invoke('text')
           .then((newText) => {
             const newStock = parseInt(newText.match(/\d+/)?.[0] || '0');
             expect(newStock).to.eq(initialStock - 2);
           });
 
-        // Champ disponibilité
+        // Vérifie la présence du champ de disponibilité
         cy.contains('en stock', { timeout: 15000 })
           .should('be.visible');
       });
