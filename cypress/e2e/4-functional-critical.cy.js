@@ -2,7 +2,7 @@
 
 describe('Tests Fonctionnels Critiques', () => {
   it('1. Connexion Front', () => {
-    cy.loginUI(); // Connexion mock
+    cy.loginUI(); // Connexion mock (comme à la main)
 
     cy.get('[data-cy="nav-link-cart"]', { timeout: 15000 })
       .should('be.visible')
@@ -10,63 +10,63 @@ describe('Tests Fonctionnels Critiques', () => {
   });
 
   it('2. Panier (connecté avec les infos ci-dessus)', () => {
-    cy.loginUI(); // Connexion AVANT visite produit (important !)
+    cy.loginUI(); // Connexion mock
 
-    // Visite directe du produit 5 (stock = 23)
+    // Aller directement sur le produit 5 (stock 23)
     cy.visit('/#/products/5');
 
     cy.url({ timeout: 15000 }).should('include', '/products/5');
 
-    // Récupère le stock initial (doit être 23)
+    // 3. Vérifier le stock > 1
     cy.get('[data-cy="detail-product-stock"]', { timeout: 15000 })
       .invoke('text')
       .then((text) => {
-        console.log(`Texte stock trouvé : "${text}"`); // Debug
         const initialStock = parseInt(text.match(/\d+/)?.[0] || '0');
-        expect(initialStock).to.be.gte(2, 'Stock insuffisant sur produit 5');
+        expect(initialStock).to.be.gt(1, 'Stock insuffisant pour ajouter au panier');
+      });
 
-        // Test limite négative
-        cy.get('[data-cy="detail-product-quantity"]', { timeout: 15000 })
-          .clear()
-          .type('-5')
-          .should('not.have.value', '-5');
+    // 8. Vérifier la présence du champ de disponibilité du produit
+    cy.contains('en stock', { timeout: 15000 })
+      .should('be.visible');
 
-        // Test limite >20
-        cy.get('[data-cy="detail-product-quantity"]')
-          .clear()
-          .type('25')
-          .should('have.value', '20');
+    // 9. Test limite négatif
+    cy.get('[data-cy="detail-product-quantity"]', { timeout: 15000 })
+      .clear()
+      .type('-5')
+      .should('not.have.value', '-5');
 
-        // Ajout de 2 produits
-        cy.get('[data-cy="detail-product-quantity"]')
-          .clear()
-          .type('2');
+    // 10. Test limite >20
+    cy.get('[data-cy="detail-product-quantity"]')
+      .clear()
+      .type('25')
+      .should('have.value', '20');
 
-        cy.contains('button', /ajouter au panier|ajouter/i)
-          .click();
+    // 5 + 11. Ajouter au panier (2 unités)
+    cy.get('[data-cy="detail-product-quantity"]')
+      .clear()
+      .type('2');
 
-        // Vérif contenu panier via API
-        cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
-          .then((resp) => {
-            if (resp.status === 200) {
-              const items = Array.isArray(resp.body) ? resp.body : resp.body.items || [];
-              expect(items.some(item => item.quantity >= 2)).to.be.true;
-            }
-          });
+    cy.contains('button', /ajouter au panier|ajouter/i)
+      .click();
 
-        // Retour sur la page du produit et vérif stock diminué
-        cy.reload();
+    // 6. Vérifier l’ajout via l’API
+    cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
+      .then((resp) => {
+        if (resp.status === 200) {
+          const items = Array.isArray(resp.body) ? resp.body : resp.body.items || [];
+          expect(items.some(item => item.quantity >= 2)).to.be.true;
+        }
+      });
 
-        cy.get('[data-cy="detail-product-stock"]')
-          .invoke('text')
-          .then((newText) => {
-            const newStock = parseInt(newText.match(/\d+/)?.[0] || '0');
-            expect(newStock).to.eq(initialStock - 2);
-          });
+    // 7. Retour sur la page produit et vérif stock diminué
+    cy.reload();
 
-        // Vérifie la présence du champ de disponibilité
-        cy.contains('en stock', { timeout: 15000 })
-          .should('be.visible');
+    cy.get('[data-cy="detail-product-stock"]')
+      .invoke('text')
+      .then((newText) => {
+        const newStock = parseInt(newText.match(/\d+/)?.[0] || '0');
+        const initialStock = parseInt(Cypress.$('[data-cy="detail-product-stock"]').text().match(/\d+/)?.[0] || '0');
+        expect(newStock).to.eq(initialStock - 2);
       });
   });
 });

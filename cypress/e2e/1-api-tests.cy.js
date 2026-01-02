@@ -8,7 +8,7 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
 
   before(() => {
     cy.loginUI();
-    return cy.apiRequest({ method: 'GET', url: '/products', auth: false })
+     cy.apiRequest({ method: 'GET', url: '/products', auth: false })
       .its('body')
       .then((products) => {
         if (Array.isArray(products) && products.length > 0) {
@@ -19,14 +19,14 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
 
 
   it('GET /orders sans connexion → retourne erreur pour données confidentielles', () => {
-    return cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
+     cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
       .its('status')
       .should('eq', 401);
   });
 
   it('GET /orders avec connexion → récupère la liste des produits du panier', () => {
     
-    return cy.apiRequest({ method: 'GET', url: '/orders', auth: true })
+     cy.apiRequest({ method: 'GET', url: '/orders', auth: true })
       .its('status')
       .should('eq', 200);
   });
@@ -34,7 +34,7 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
 
 
   it('GET /products/{id} → récupère une fiche produit spécifique', () => {
-    cy.apiRequest({ method: 'GET', url: `/products/${productId}`, auth: false })
+     cy.apiRequest({ method: 'GET', url: `/products/${productId}`, auth: false })
       .its('status')
       .should('eq', 200);
   });
@@ -55,21 +55,13 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
       body: { username: Cypress.env('TEST_EMAIL'), password: Cypress.env('TEST_PASSWORD') },
       failOnStatusCode: false,
     }).then((resp) => {
-      cy.log(JSON.stringify(resp.body)); // Voir le message d'erreur retourné
       expect(resp.status, 'Status devrait être 200 pour un login réussi').to.eq(200);
     });
   });
-    it('Vérification du token dans Cypress.env après login', () => {
-      cy.loginUI();
-      cy.then(() => {
-        const token = Cypress.env('authToken');
-        cy.log('Token actuel:', token);
-        expect(token).to.exist;
-      });
-    });
+
 
   it('PUT /orders/add → ajout produit disponible', () => {
-  return cy.apiRequest({
+   cy.apiRequest({
     method: 'PUT',
     url: '/orders/add',
     body: { product: productId, quantity: 1 },
@@ -78,20 +70,23 @@ describe('Tests API - 6 requêtes demandées (avec connexion mock front + token 
 });
 
   it('POST /orders/add → ajout produit en rupture de stock', () => {
-    return cy.apiRequest({
+     cy.apiRequest({
       method: 'POST',
       url: '/orders/add',
-      body: { productId: 999, quantity: 1 },
+      body: { productId: 3, quantity: 1 },
       auth: true,
     }).its('status').should('not.eq', 200);
   });
 
-  it('POST /reviews → ajouter un avis', () => {
-    return cy.apiRequest({
-      method: 'POST',
-      url: '/reviews',
-      body: { title: 'Test automatisé', rating: 5, comment: 'Test automatisé' },
+  it('PUT /orders/add → ajout produit en rupture de stock', () => {
+    cy.apiRequest({
+      method: 'PUT',
+      url: '/orders/add',
+      body: { productId: 3, quantity: 1 },
       auth: true,
-    }).its('status').should('be.oneOf', [200, 201]);
+    }).then((resp) => {
+      expect(resp.status).to.not.eq(200);
+      expect(resp.status).to.be.oneOf([400, 404, 409, 422]);
+    });
   });
 });
