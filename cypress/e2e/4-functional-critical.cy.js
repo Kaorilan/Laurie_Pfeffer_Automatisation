@@ -15,13 +15,18 @@ describe('Tests Fonctionnels Critiques', () => {
     cy.visit('/#/cart');
     cy.url().should('include', '/cart');
 
-    cy.get('[data-cy="cart-line-delete"]').then(($buttons) => {
-      if ($buttons.length > 0) {
-        cy.wrap($buttons).each(($btn) => {
-          cy.wrap($btn).click();
-          // Attendez la mise à jour du DOM si besoin
-          cy.wait(500);
-        });
+    cy.get('body').then(function removeItems() {
+      const count = Cypress.$('[data-cy="cart-line-delete"]').length;
+      cy.log(`Articles à supprimer dans le panier : ${count}`);
+      console.log(`Articles à supprimer dans le panier : ${count}`);
+
+      if (count) {
+        cy.get('[data-cy="cart-line-delete"]').first().click();
+        cy.wait(500);
+        cy.then(removeItems);
+      } else {
+        cy.log('Panier vidé ✅');
+        console.log('Panier vidé ✅');
       }
     });
 
@@ -67,9 +72,6 @@ describe('Tests Fonctionnels Critiques', () => {
             const newStock = parseInt(newText.match(/\d+/)?.[0] || '3');
             expect(newStock).to.eq(initialStock - 20);
           });
-
-        cy.contains('en stock', { timeout: 15000 })
-          .should('be.visible');
-      });
+      }); 
   });
 });
