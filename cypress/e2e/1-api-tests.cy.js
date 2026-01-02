@@ -2,7 +2,7 @@
 
 const API_BASE = Cypress.env('API_BASE') || 'http://localhost:8081';
 
-describe('Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage)', () => {
+describe('Tests API - requêtes demandées (avec connexion mock front + token localStorage)', () => {
   let productId;
 
 
