@@ -2,7 +2,7 @@
 
 describe('Tests Fonctionnels Critiques', () => {
   it('1. Connexion Front', () => {
-    cy.loginUI(); // Connexion mock (comme à la main)
+    cy.loginUI();
 
     cy.get('[data-cy="nav-link-cart"]', { timeout: 15000 })
       .should('be.visible')
@@ -10,38 +10,33 @@ describe('Tests Fonctionnels Critiques', () => {
   });
 
   it('2. Panier (connecté avec les infos ci-dessus)', () => {
-    cy.loginUI(); // Connexion mock
+    cy.loginUI();
 
-    // Aller directement sur le produit 5 (stock 23)
     cy.visit('/#/products/5');
 
     cy.url({ timeout: 15000 }).should('include', '/products/5');
 
-    // 3. Vérifier le stock > 1
+    // Vérifie stock >1
     cy.get('[data-cy="detail-product-stock"]', { timeout: 15000 })
       .invoke('text')
       .then((text) => {
         const initialStock = parseInt(text.match(/\d+/)?.[0] || '0');
-        expect(initialStock).to.be.gt(1, 'Stock insuffisant pour ajouter au panier');
+        expect(initialStock).to.be.gte(2);
       });
 
-    // 8. Vérifier la présence du champ de disponibilité du produit
-    cy.contains('en stock', { timeout: 15000 })
-      .should('be.visible');
-
-    // 9. Test limite négatif
+    // Test limite négative
     cy.get('[data-cy="detail-product-quantity"]', { timeout: 15000 })
       .clear()
       .type('-5')
       .should('not.have.value', '-5');
 
-    // 10. Test limite >20
+    // Test limite >20
     cy.get('[data-cy="detail-product-quantity"]')
       .clear()
       .type('25')
       .should('have.value', '20');
 
-    // 5 + 11. Ajouter au panier (2 unités)
+    // Ajout de 2 produits
     cy.get('[data-cy="detail-product-quantity"]')
       .clear()
       .type('2');
@@ -49,16 +44,18 @@ describe('Tests Fonctionnels Critiques', () => {
     cy.contains('button', /ajouter au panier|ajouter/i)
       .click();
 
-    // 6. Vérifier l’ajout via l’API
-    cy.apiRequest({ method: 'GET', url: '/orders', auth: false })
-      .then((resp) => {
-        if (resp.status === 200) {
-          const items = Array.isArray(resp.body) ? resp.body : resp.body.items || [];
-          expect(items.some(item => item.quantity >= 2)).to.be.true;
-        }
-      });
+    // Vérif ajout via UI (badge panier ou page panier)
+    cy.get('[data-cy="nav-link-cart"]')
+      .should('contain.text', '(2)') // Badge quantité (adapte si différent)
 
-    // 7. Retour sur la page produit et vérif stock diminué
+    // Ou ouvre le panier
+    cy.get('[data-cy="nav-link-cart"]').click();
+    cy.url().should('include', '/cart');
+    cy.contains('2') // Quantité dans le panier
+      .should('be.visible');
+
+    // Recharge produit et vérif stock diminué
+    cy.go('back');
     cy.reload();
 
     cy.get('[data-cy="detail-product-stock"]')
@@ -68,5 +65,9 @@ describe('Tests Fonctionnels Critiques', () => {
         const initialStock = parseInt(Cypress.$('[data-cy="detail-product-stock"]').text().match(/\d+/)?.[0] || '0');
         expect(newStock).to.eq(initialStock - 2);
       });
+
+    // Champ disponibilité
+    cy.contains('en stock', { timeout: 15000 })
+      .should('be.visible');
   });
 });
