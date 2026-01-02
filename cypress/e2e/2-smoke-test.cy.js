@@ -13,7 +13,7 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
 
     cy.url({ timeout: 10000 }).should('include', '/#/login');
 
-    // Champ email : fallback sur tous les inputs possibles
+    // Champ email : fallback robuste
     cy.get('input[type="text"], input[type="email"], input[placeholder*="mail"], input[placeholder*="user"], input[name="email"], input[name="username"]', { timeout: 10000 })
       .first()
       .should('be.visible');
@@ -29,20 +29,7 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
   });
 
   it('Vérifie la présence des boutons d’ajout au panier quand connecté', () => {
-    cy.get('[data-cy="nav-link-login"]').click();
-    cy.url().should('include', '/#/login');
-
-    // Saisie dans le champ email (fallback robuste)
-    cy.get('input[type="text"], input[type="email"], input[placeholder*="mail"], input[placeholder*="user"], input[name="email"], input[name="username"]')
-      .first()
-      .type(Cypress.env('TEST_EMAIL'));
-
-    cy.get('[data-cy="login-input-password"]')
-      .type(Cypress.env('TEST_PASSWORD'));
-
-    cy.get('[data-cy="login-submit"]').click();
-
-    cy.url({ timeout: 15000 }).should('not.include', '/login');
+    cy.loginUI(); // Connexion centralisée (recommandé !)
 
     // Bouton "Mon panier" visible
     cy.get('[data-cy="nav-link-cart"]', { timeout: 10000 })
@@ -66,7 +53,7 @@ describe('Smoke Tests - Front sur localhost:4200', () => {
     // Attente page produit
     cy.url({ timeout: 10000 }).should('include', '/products/');
 
-    // Bouton "Ajouter au panier" visible sur page produit
+    // Bouton "Ajouter au panier" visible
     cy.contains('button', /ajouter au panier|ajouter/i, { timeout: 10000 })
       .should('be.visible');
   });
