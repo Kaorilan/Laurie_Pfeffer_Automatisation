@@ -17,6 +17,9 @@ describe('Gestion du stock dans l’interface produit', () => {
         cy.get('[data-cy="detail-product-quantity"]').clear().type(`${stock + 5}`).blur();
         cy.get('[data-cy="detail-product-add"]').click();
 
+        cy.get('body').then($body => {
+        cy.log($body.text());
+      });
         // Attendre la réponse API (vous pouvez intercepter si besoin)
         // Puis vérifier qu’un message d’erreur apparaît
         cy.get('[data-cy="error-message"]').should('be.visible')
