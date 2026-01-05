@@ -15,19 +15,28 @@ describe('Tests Fonctionnels Critiques', () => {
     cy.visit('/#/cart');
     cy.url().should('include', '/cart');
 
-    cy.get('body').then(function removeItems() {
-      const count = Cypress.$('[data-cy="cart-line-delete"]').length;
-      cy.log(`Articles à supprimer dans le panier : ${count}`);
-      console.log(`Articles à supprimer dans le panier : ${count}`);
+    // Attendre que le chargement soit fini
+    cy.get('[data-cy="loading-spinner"]', { timeout: 10000 }).should('not.exist');
 
-      if (count) {
-        cy.get('[data-cy="cart-line-delete"]').first().click();
-        cy.wait(500);
-        cy.then(removeItems);
-      } else {
+    cy.wait(10000);
+
+    function clearCart() {
+      // On retourne la chaîne Cypress pour synchroniser
+      return cy.get('img[data-cy="cart-line-delete"]').then(($imgs) => {
+        if ($imgs.length > 0) {
+          cy.wrap($imgs[0]).scrollIntoView().click({ force: true });
+          cy.wait(500);
+          return clearCart();  // appel récursif avec return
+        }
         cy.log('Panier vidé ✅');
-        console.log('Panier vidé ✅');
-      }
+        return; // fin de la promesse
+      });
+    }
+
+    // Puis dans votre test :
+    clearCart().then(() => {
+      cy.log('Suppression terminée, on continue.');
+      // Ici vos assertions sur le stock
     });
 
     cy.visit('/#/products/5');
