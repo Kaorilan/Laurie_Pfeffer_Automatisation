@@ -61,7 +61,7 @@ describe('Tests Fonctionnels Critiques', () => {
 
           cy.get('[data-cy="detail-product-quantity"]')
             .clear()
-            .type('20').blur();
+            .type('25').blur();
 
           cy.get('[data-cy="detail-product-add"]')
             .click();

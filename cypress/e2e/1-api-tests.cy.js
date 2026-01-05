@@ -73,7 +73,7 @@ describe('Tests API - requêtes demandées (avec connexion mock front + token lo
      cy.apiRequest({
       method: 'POST',
       url: '/orders/add',
-      body: { productId: 3, quantity: 1 },
+      body: { productId: 4, quantity: 5 },
       auth: true,
     }).its('status').should('not.eq', 200);
   });
@@ -82,11 +82,11 @@ describe('Tests API - requêtes demandées (avec connexion mock front + token lo
     cy.apiRequest({
       method: 'PUT',
       url: '/orders/add',
-      body: { productId: 3, quantity: 1 },
+      body: { productId: 4, quantity: 5 },
       auth: true,
     }).then((resp) => {
       expect(resp.status).to.not.eq(200);
-      expect(resp.status).to.be.oneOf([400, 404, 409, 422]);
+      expect([400, 404, 409, 422]).to.include(resp.status);
     });
   });
 });
