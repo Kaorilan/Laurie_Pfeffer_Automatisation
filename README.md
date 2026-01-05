@@ -55,4 +55,18 @@ npx cypress run
 npx cypress open
 ```
 
+### Tests implémentés
+
+- Tests API (6 requêtes) : GET /orders (avec/sans auth), GET /products/{id}, POST /login (cas valide/invalide), PUT /orders/add (produit disponible/rupture), POST /reviews
+- Smoke tests : présence formulaire connexion et boutons panier après connexion
+- Test XSS : 5 payloads classiques dans l’espace avis (stored XSS)
+- Tests fonctionnels critiques :
+    - Connexion front
+    - Panier : ajout produit, limites quantité (négatif bloqué, >20 limité à 20), décrément stock, vérification via UI
+
+
+### Résultats et anomalies
+
+Voir le bilan de campagne de test automatisé joint (PDF) pour le détail des résultats, anomalies détectées et recommandations.
+
 
