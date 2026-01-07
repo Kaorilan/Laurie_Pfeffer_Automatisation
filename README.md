@@ -57,12 +57,12 @@ npx cypress open
 
 ### Tests implémentés
 
-- Tests API (6 requêtes) : GET /orders (avec/sans auth), GET /products/{id}, POST /login (cas valide/invalide), PUT /orders/add (produit disponible/rupture), POST /orders/add (produit rupture), POST /reviews
-- Smoke tests : présence formulaire connexion et boutons panier après connexion
-- Test XSS : 5 payloads classiques dans l’espace avis (stored XSS)
+- Tests API (7 requêtes) : GET /orders (avec/sans auth), GET /products/{id}, POST /login (cas valide/invalide),  POST /orders/add (produit disponible/produit rupture), PUT /orders/add (produit disponible/rupture), POST /reviews
+- Smoke tests : présence formulaire connexion, boutons panier après connexion, bouton consulter un produit, bouton ajouter un produit au panier.
+- Test XSS : 5 payloads classiques dans l’espace avis.
 - Tests fonctionnels critiques :
-    - Connexion front
-    - Panier : ajout produit, limites quantité (négatif bloqué, >20 limité à 20), décrément stock, vérification via UI
+    - Connexion
+    - Panier : ajout produit, limites quantité (négatif bloqué, >20 limité à 20), décrément stock, vérification du stock, suppression du panier.
 
 
 ### Résultats et anomalies
