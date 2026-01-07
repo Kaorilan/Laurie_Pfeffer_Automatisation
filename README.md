@@ -57,7 +57,7 @@ npx cypress open
 
 ### Tests implémentés
 
-- Tests API (7 requêtes) : GET /orders (avec/sans auth), GET /products/{id}, POST /login (cas valide/invalide),  POST /orders/add (produit disponible/produit rupture), PUT /orders/add (produit disponible/rupture), POST /reviews
+- Tests API (10 requêtes) : GET /orders (avec/sans auth), GET /products/{id}, POST /login (cas valide/invalide),  POST /orders/add (produit disponible/produit rupture), PUT /orders/add (produit disponible/rupture), POST /reviews.
 - Smoke tests : présence formulaire connexion, boutons panier après connexion, bouton consulter un produit, bouton ajouter un produit au panier.
 - Test XSS : 5 payloads classiques dans l’espace avis.
 - Tests fonctionnels critiques :

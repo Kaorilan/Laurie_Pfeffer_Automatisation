@@ -101,23 +101,18 @@ describe('Tests API - requêtes demandées (avec connexion mock front + token lo
     });
   });
 
-
-  before(() => {
-  cy.loginUI(); // Authentification réelle pour stocker token valide
-});
-
-it('POST /reviews → ajouter un avis avec token valide', () => {
-  cy.apiRequest({
-    method: 'POST',
-    url: '/reviews',
-    body: { 
-      productId: productId, 
-      rating: 5, 
-      comment: 'Test automatisé Cypress' 
-    },
-    auth: true,
-  }).then((resp) => {
-    expect(resp.status).to.eq(200);
+  it('POST /reviews → ajouter un avis général avec token valide', () => {
+    cy.apiRequest({
+      method: 'POST',
+      url: '/reviews',
+      body: { 
+        rating: 5, 
+        title: 'Avis général', 
+        comment: 'Test automatisé Cypress' 
+      },
+      auth: true,
+    }).then((resp) => {
+      expect(resp.status).to.eq(200);
+    });
   });
-});
 });

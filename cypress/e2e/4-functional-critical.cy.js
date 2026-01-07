@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
 describe('Tests Fonctionnels Critiques', () => {
-  it('1. Connexion Front', () => {
+  it('1. Connexion', () => {
     cy.loginUI();
 
     cy.get('[data-cy="nav-link-cart"]', { timeout: 15000 })
@@ -68,6 +68,9 @@ describe('Tests Fonctionnels Critiques', () => {
 
           cy.url()
             .should('include', '/cart');
+
+          cy.get('[data-cy="cart-line-quantity"]')
+            .should('have.value', '25');
 
           cy.go('back');
 
