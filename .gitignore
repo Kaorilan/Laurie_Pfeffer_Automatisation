@@ -10,3 +10,4 @@ cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec c
 cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- POST ordersadd → ajout produit disponible (failed).png
 cypress/screenshots/1-api-tests.cy.js/Tests API - 6 requêtes demandées (avec connexion mock front + token localStorage) -- Vérification du token dans Cypress.env après login (failed).png
 cypress/screenshots/4-functional-critical.cy.js/Tests Fonctionnels Critiques -- 2. Panier (connecté avec les infos ci-dessus) (failed).png
+cypress/screenshots/1.2-front-add-rupture.cy.js/Gestion du stock dans l’interface produit -- Ne permet pas d'ajouter une quantité supérieure au stock (failed).png
