@@ -60,11 +60,22 @@ describe('Tests API - requêtes demandées (avec connexion mock front + token lo
   });
 
 
+
+  it('POST /orders/add → ajout produit disponible', () => {
+   cy.apiRequest({
+      method: 'POST',
+      url: '/orders/add',
+      body: { product: 5, quantity: 1 },
+      auth: true,
+    }).its('status').should('not.eq', 200);
+  });
+
+
   it('PUT /orders/add → ajout produit disponible', () => {
    cy.apiRequest({
     method: 'PUT',
     url: '/orders/add',
-    body: { product: productId, quantity: 1 },
+    body: { product: 5, quantity: 1 },
     auth: true,
   }).its('status').should('eq', 200);
 });
@@ -89,4 +100,24 @@ describe('Tests API - requêtes demandées (avec connexion mock front + token lo
       expect([400, 404, 409, 422]).to.include(resp.status);
     });
   });
+
+
+  before(() => {
+  cy.loginUI(); // Authentification réelle pour stocker token valide
+});
+
+it('POST /reviews → ajouter un avis avec token valide', () => {
+  cy.apiRequest({
+    method: 'POST',
+    url: '/reviews',
+    body: { 
+      productId: productId, 
+      rating: 5, 
+      comment: 'Test automatisé Cypress' 
+    },
+    auth: true,
+  }).then((resp) => {
+    expect(resp.status).to.eq(200);
+  });
+});
 });
