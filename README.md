@@ -68,5 +68,5 @@ npx cypress open
 ### Résultats et anomalies
 
 Voir le bilan de campagne de test automatisé joint (PDF) pour le détail des résultats, anomalies détectées et recommandations.
-
+Dans le dossier "Documentation" à la racine du projet.
 
