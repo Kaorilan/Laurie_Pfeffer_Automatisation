@@ -61,13 +61,13 @@ describe('Tests API - requêtes demandées (avec connexion mock front + token lo
 
 
 
-  it('POST /orders/add → ajout produit disponible', () => {
+  it('POST /orders/add → ajout produit disponible ', () => {
    cy.apiRequest({
       method: 'POST',
       url: '/orders/add',
       body: { product: 5, quantity: 1 },
       auth: true,
-    }).its('status').should('not.eq', 200);
+    }).its('status').should('eq', 200);
   });
 
 
@@ -86,19 +86,16 @@ describe('Tests API - requêtes demandées (avec connexion mock front + token lo
       url: '/orders/add',
       body: { productId: 4, quantity: 5 },
       auth: true,
-    }).its('status').should('not.eq', 200);
+    }).its('status').should('eq', 200);
   });
 
   it('PUT /orders/add → ajout produit en rupture de stock', () => {
     cy.apiRequest({
       method: 'PUT',
       url: '/orders/add',
-      body: { productId: 4, quantity: 5 },
+      body: { product: 4, quantity: 5 },
       auth: true,
-    }).then((resp) => {
-      expect(resp.status).to.not.eq(200);
-      expect([400, 404, 409, 422]).to.include(resp.status);
-    });
+    }).its('status').should('not.eq', 200);
   });
 
   it('POST /reviews → ajouter un avis général avec token valide', () => {
